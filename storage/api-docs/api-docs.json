@@ -1,0 +1,893 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel API",
+        "description": "Laravel API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8097/api",
+            "description": "Local server"
+        },
+        {
+            "url": "https://api.prod.example.com/api",
+            "description": "Production server"
+        },
+        {
+            "url": "https://api.staging.example.com/api",
+            "description": "Staging server"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User has been registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login a user",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User has been logged successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get the authenticated user's information",
+                "operationId": "2baab1eeb5fd49516237a38da22e7a07",
+                "responses": {
+                    "200": {
+                        "description": "Authenticated user info",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh the access token",
+                "operationId": "ba3d43e7c90e3d31ce13fca10f19b70f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Refreshed token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Token"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout the authenticated user",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
+                "responses": {
+                    "204": {
+                        "description": "Logged out successfully"
+                    }
+                }
+            }
+        },
+        "/documents": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Get a list of documents",
+                "operationId": "58aa02e52615eb94196343283d7e4b56",
+                "responses": {
+                    "200": {
+                        "description": "Documents retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Document"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No documents found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Upload a new document",
+                "operationId": "1376f0c660d7ac76c951592057ca0d19",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Document uploaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Document"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Document could not be uploaded"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Get a specific document",
+                "operationId": "57dd60228c625f36e6c6907a984208f1",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "The ID of the document",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Document"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Delete a document",
+                "operationId": "2c70c2f0dfdf713a529883c6f3ea69d7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the document",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document deleted successfully"
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}/status": {
+            "patch": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Update the status of a document",
+                "operationId": "4b0b0a8b0f81a79783610bf65e3ee226",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the document",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "description": "The new status of the document",
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "signed"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Document status updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Document"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}/download": {
+            "get": {
+                "tags": [
+                    "Documents"
+                ],
+                "summary": "Download a document",
+                "operationId": "3746ca3aa82a33a0c2f617b3f0b918af",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the document",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document downloaded successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Document"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}/send-signature-request": {
+            "post": {
+                "tags": [
+                    "Signature Requests"
+                ],
+                "summary": "Send a signature request for a document",
+                "operationId": "bd03a27bd4bc7898e38422df03d621fa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of the document",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignatureRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Signature request sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignatureRequest"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "You do not own this document"
+                    },
+                    "400": {
+                        "description": "Signature request could not be sent"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/signature-requests/{id}/status": {
+            "patch": {
+                "tags": [
+                    "Signature Requests"
+                ],
+                "summary": "Update signature request status",
+                "operationId": "8b22ffeef633e8b707814ddf0c7e9c66",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Signature request ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "description": "New status",
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "signed"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignatureRequest"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    },
+                    "404": {
+                        "description": "Request not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}/add-signature": {
+            "post": {
+                "tags": [
+                    "Signature Requests"
+                ],
+                "summary": "Add a signature to a document",
+                "operationId": "3064f8c9edb47579f46592d13af25508",
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "Document ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Signature"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Document signed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Signature"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not authorized"
+                    },
+                    "400": {
+                        "description": "Signature error"
+                    },
+                    "404": {
+                        "description": "Signature request not found"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/documents/{uuid}/signed": {
+            "get": {
+                "tags": [
+                    "Signature Requests"
+                ],
+                "summary": "Show signed document",
+                "description": "Returns a signed document along with its signature data if available.",
+                "operationId": "46a720870b99d79838c8f33cb43539f0",
+                "parameters": [
+                    {
+                        "name": "documentId",
+                        "in": "path",
+                        "description": "The ID of the document to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Signed document retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "description": "URL to the document file",
+                                            "type": "string"
+                                        },
+                                        "signature": {
+                                            "description": "The signature data",
+                                            "type": "string"
+                                        },
+                                        "signed_at": {
+                                            "description": "The time when the document was signed",
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "signer": {
+                                            "description": "Name of the signer",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    },
+                    "400": {
+                        "description": "No signature found or signature integrity is compromised"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Document": {
+                "title": "Document",
+                "description": "Document object",
+                "required": [
+                    "id",
+                    "name",
+                    "url"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The document ID",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name": {
+                        "description": "The document name",
+                        "type": "string"
+                    },
+                    "filePath": {
+                        "description": "The document URL",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "DocumentRequest": {
+                "title": "Document Request",
+                "description": "Request body for document operations",
+                "required": [
+                    "document"
+                ],
+                "properties": {
+                    "document": {
+                        "description": "The document file to be uploaded",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "title": "Login Request",
+                "description": "Request body for user login",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "The email address of the user",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "description": "The password for the user",
+                        "type": "string",
+                        "format": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "RefreshTokenRequest": {
+                "title": "Refresh Token Request",
+                "description": "Request body for refreshing an access token",
+                "required": [
+                    "refresh_token"
+                ],
+                "properties": {
+                    "refresh_token": {
+                        "description": "The refresh token issued to the user",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "title": "Register Request",
+                "description": "Request body for user registration",
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "The name of the user",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The email address of the user",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "description": "The password for the user",
+                        "type": "string",
+                        "format": "password"
+                    },
+                    "password_confirmation": {
+                        "description": "The password confirmation for the user",
+                        "type": "string",
+                        "format": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "Signature": {
+                "title": "Signature",
+                "description": "Signature model",
+                "required": [
+                    "document_id",
+                    "user_id",
+                    "signature_data",
+                    "signed_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the signature",
+                        "type": "integer"
+                    },
+                    "document_id": {
+                        "description": "The ID of the document being signed",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "description": "The ID of the user who signed the document",
+                        "type": "integer"
+                    },
+                    "signature_data": {
+                        "description": "The signature data (base64 string or JSON)",
+                        "type": "string"
+                    },
+                    "signed_at": {
+                        "description": "The timestamp when the document was signed",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "SignatureRequest": {
+                "title": "Signature Request",
+                "description": "Request body for signature operations",
+                "required": [
+                    "document_id",
+                    "signer_id"
+                ],
+                "properties": {
+                    "document_id": {
+                        "description": "The ID of the document to be signed",
+                        "type": "integer"
+                    },
+                    "signer_id": {
+                        "description": "The ID of the user who will sign the document",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "Token": {
+                "title": "Token",
+                "description": "Response body for access token",
+                "required": [
+                    "access_token",
+                    "token_type",
+                    "expires_in"
+                ],
+                "properties": {
+                    "access_token": {
+                        "description": "The access token issued to the user",
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "description": "The type of the token issued",
+                        "type": "string"
+                    },
+                    "expires_in": {
+                        "description": "The duration in seconds for which the token is valid",
+                        "type": "integer"
+                    },
+                    "refresh_token": {
+                        "description": "The refresh token issued to the user",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "User",
+                "description": "User model",
+                "required": [
+                    "id",
+                    "name",
+                    "email"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the user",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "The name of the user",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The email address of the user",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "email_verified_at": {
+                        "description": "The date and time when the user's email was verified",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "description": "The date and time when the user was created",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "The date and time when the user was last updated",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "passport": {
+                "type": "oauth2",
+                "description": "Laravel passport oauth2 security.",
+                "in": "header",
+                "scheme": "https",
+                "flows": {
+                    "password": {
+                        "authorizationUrl": "http://lureg.test/oauth/authorize",
+                        "tokenUrl": "http://lureg.test/oauth/token",
+                        "refreshUrl": "http://lureg.test/token/refresh",
+                        "scopes": []
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Documents",
+            "description": "Documents"
+        },
+        {
+            "name": "Signature Requests",
+            "description": "Signature Requests"
+        }
+    ]
+}
