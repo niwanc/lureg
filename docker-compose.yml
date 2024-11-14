@@ -26,9 +26,12 @@ services:
             - PASSPORT_PASSWORD_CLIENT_ID=  #testing purposes only
             - PASSPORT_PASSWORD_CLIENT_SECRET= #testing purposes only
         command: bash -c "composer install  && php artisan migrate  && php-fpm"
+        networks:
+            - lara
 
     db:
         image: mysql:8
+        restart: on-failure
         container_name: laravel_db
         ports:
             - "3358:3306"
@@ -39,9 +42,12 @@ services:
             - MYSQL_PASSWORD=root
         volumes:
             - db_data:/var/lib/mysql
+        networks:
+            - lara
 
     nginx:
         image: nginx:latest
+        restart: on-failure
         container_name: laravel_nginx
         ports:
             - "8097:80"
@@ -49,15 +55,18 @@ services:
             - ./:/var/www/html
             - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
         depends_on:
-            - db
             - app
-            - redis
+        networks:
+            - lara
 
     redis:
         image: redis:alpine
+        restart: on-failure
         container_name: laravel_redis
         ports:
             - "6388:6379"
+        networks:
+            - lara
 
 volumes:
     db_data:
