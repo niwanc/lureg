@@ -56,6 +56,9 @@ jobs:
       - name: Run Database Migrations
         run: php artisan migrate --seed
 
+      - name: Run Passport Install
+        run: php artisan passport:keys --force
+
       - name: Run Testsuite
         env:
           DB_CONNECTION: sqlite

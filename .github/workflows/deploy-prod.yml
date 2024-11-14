@@ -57,7 +57,7 @@ jobs:
         run: php artisan migrate --seed
 
       - name: Run Passport Install
-        run: php artisan install:api --passport
+        run: php artisan passport:keys --force
 
       - name: Run Testsuite
         env:

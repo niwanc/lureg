@@ -5,56 +5,96 @@ namespace Tests\Unit;
 use App\Repositories\OAuthRepository;
 use Illuminate\Support\Facades\Http;
 use Mockery;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
-
+use Tests\TestCase ;
 class OAuthRepositoryTest extends TestCase
 {
     /**
      * @throws \JsonException
      */
-    public function GetAccessToken_Returns_CorrectData()
+    private OAuthRepository $oauthRepository;
+
+    protected function setUp(): void
     {
-        // Arrange
-        $userData = [
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ];
+        parent::setUp();
+        $this->oauthRepository = new OAuthRepository();
+    }
 
-        // Mock GuzzleHttp\Client
-        $mockClient = Mockery::mock(Http::class);
-
-        // Mock the response from the OAuth server
-        $mockResponse = Mockery::mock(ResponseInterface::class);
-        $mockResponse->shouldReceive('getBody')
-            ->andReturn(json_encode([
-                'access_token' => 'mockedAccessToken',
-                'token_type' => 'Bearer',
+    public function test_GetAccessToken_Successful()
+    {
+        // Arrange: Fake HTTP response for a successful token request
+        Http::fake([
+            config('app.url') . '/oauth/token' => Http::response([
+                'access_token' => 'test_access_token',
+                'refresh_token' => 'test_refresh_token',
                 'expires_in' => 3600,
-            ], JSON_THROW_ON_ERROR));
+            ], 200),
+        ]);
 
-        $mockClient->shouldReceive('post')
-            ->once()
-            ->with('https://oauth-server.com/token', [
-                'form_params' => [
-                    'grant_type' => 'password',
-                    'email' => 'test@example.com',
-                    'password' => 'password123',
-                ]
-            ])
-            ->andReturn($mockResponse);
+        $userData = ['email' => 'test@example.com', 'password' => 'password'];
 
-        // Inject the mocked client into the OAuthRepository
-        $oauthRepository = new OAuthRepository();
-
-        // Act
-        $tokenData = $oauthRepository->getAccessToken($userData, 'password');
+        // Act: Call the getAccessToken method
+        $response = $this->oauthRepository->getAccessToken($userData, 'password');
 
         // Assert
-        $this->assertArrayHasKey('access_token', $tokenData);
-        $this->assertEquals('mockedAccessToken', $tokenData['access_token']);
-        $this->assertEquals('Bearer', $tokenData['token_type']);
-        $this->assertEquals(3600, $tokenData['expires_in']);
+        $this->assertIsArray($response);
+        $this->assertEquals('test_access_token', $response['access_token']);
+        $this->assertEquals('test_refresh_token', $response['refresh_token']);
+        $this->assertEquals(3600, $response['expires_in']);
+    }
+
+    public function test_GetAccessToken_Unsuccessful()
+    {
+        // Arrange: Fake HTTP response for a failed token request
+        Http::fake([
+            config('app.url') . '/oauth/token' => Http::response([], 401),
+        ]);
+
+        $userData = ['email' => 'test@example.com', 'password' => 'wrong_password'];
+
+        // Act: Call the getAccessToken method
+        $response = $this->oauthRepository->getAccessToken($userData, 'password');
+
+        // Assert
+        $this->assertNull($response);
+    }
+
+    public function test_GetRefreshToken_Successful()
+    {
+        // Arrange: Fake HTTP response for a successful refresh token request
+        Http::fake([
+            config('app.url') . '/oauth/token' => Http::response([
+                'access_token' => 'new_access_token',
+                'refresh_token' => 'new_refresh_token',
+                'expires_in' => 3600,
+            ], 200),
+        ]);
+
+        $refreshToken = ['refresh_token' => 'test_refresh_token'];
+
+        // Act: Call the getRefreshToken method
+        $response = $this->oauthRepository->getRefreshToken($refreshToken, 'refresh_token');
+
+        // Assert
+        $this->assertIsArray($response);
+        $this->assertEquals('new_access_token', $response['access_token']);
+        $this->assertEquals('new_refresh_token', $response['refresh_token']);
+        $this->assertEquals(3600, $response['expires_in']);
+    }
+
+    public function test_GetRefresh_Token_Unsuccessful()
+    {
+        // Arrange: Fake HTTP response for a failed refresh token request
+        Http::fake([
+            config('app.url') . '/oauth/token' => Http::response([], 401),
+        ]);
+
+        $refreshToken = ['refresh_token' => 'invalid_refresh_token'];
+
+        // Act: Call the getRefreshToken method
+        $response = $this->oauthRepository->getRefreshToken($refreshToken, 'refresh_token');
+
+        // Assert
+        $this->assertNull($response);
     }
 
     // Don't forget to close Mockery to avoid memory leaks
