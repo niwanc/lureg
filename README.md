@@ -16,9 +16,9 @@ This is a Laravel-based API project that includes features for user authenticati
 - [Prerequisites](#prerequisites)
 - [Setting Up the Project](#setting-up-the-project)
 - [Docker Configuration](#docker-configuration)
-- [API Documentation with Swagger](#api-documentation-with-swagger)
-- [Running the Project](#running-the-project)
-- [Testing](#testing)
+- [API Documentation with Swagger](#api-documentation-and-monitoring)
+- [Running the Project & Test](#running-tests-in-docker-environment)
+
 
 ---
 
@@ -56,9 +56,10 @@ This section provides instructions for running the Laravel API project using Doc
       http://localhost:8097
       ```
 
-# API Documentation and Monitoring in Laravel (Swagger & Telescope)
+## API Documentation and Monitoring 
 
-## Overview
+##### (Swagger & Telescope)
+
 This project includes **Swagger** for API documentation and **Laravel Telescope** for application monitoring. After setting up the Docker environment, follow the steps below to access Swagger documentation and Telescope in your browser.
 
 ### Accessing Swagger Documentation
@@ -87,7 +88,7 @@ This project includes **Swagger** for API documentation and **Laravel Telescope*
     - Use this dashboard to monitor requests, exceptions, database queries, and other application metrics.
 
 2. **Environment Requirements**
-    - Telescope is configured to run in `local` and `staging` environments. Make sure your `.env` file specifies:
+    - Telescope is configured to run in `local`  environment. Make sure your `.env` file specifies:
       ```env
       TELESCOPE_ENABLED=true
       APP_ENV=local
@@ -103,7 +104,7 @@ docker-compose exec app php artisan test
 
 Ensure the .env file is correctly copied and the environment variables are passed to the Docker container. In the docker-compose.yml, use:
 ```bash
-
+docker-compose exec app php artisan passport:keys --force
 docker-compose exec app php artisan passport:client --password
 environment:
   - PASSPORT_PASSWORD_CLIENT_ID=${PASSPORT_PASSWORD_CLIENT_ID}

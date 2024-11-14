@@ -23,6 +23,8 @@ services:
             - REDIS_HOST=redis
             - REDIS_CLIENT=predis
             - FILESYSTEM_DISK=local  # local, s3, public
+            - PASSPORT_PASSWORD_CLIENT_ID=  #testing purposes only
+            - PASSPORT_PASSWORD_CLIENT_SECRET= #testing purposes only
         command: bash -c "composer install  && php artisan migrate  && php-fpm"
 
     db:
