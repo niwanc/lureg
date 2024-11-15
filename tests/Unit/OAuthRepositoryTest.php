@@ -85,7 +85,7 @@ class OAuthRepositoryTest extends TestCase
     {
         // Arrange: Fake HTTP response for a failed refresh token request
         Http::fake([
-            config('app.url') . '/oauth/token' => Http::response([], 401),
+            config('app.app_host') . '/oauth/token' => Http::response([], 401),
         ]);
 
         $refreshToken = ['refresh_token' => 'invalid_refresh_token'];
