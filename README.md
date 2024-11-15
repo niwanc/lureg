@@ -58,7 +58,7 @@ This section provides instructions for running the Laravel API project using Doc
 ### Steps to Run the Application with Docker
 Ensure the .env file is correctly copied and the environment variables are passed to the Docker container. In the docker-compose.yml, use:
 if you ar using local deployment use this
-APP_HOST_URL=http://host.docker.internal:80
+APP_HOST_URL=http://host.docker.internal:8097
 
 if you are using docker 
 1. **Starting Docker Containers**
