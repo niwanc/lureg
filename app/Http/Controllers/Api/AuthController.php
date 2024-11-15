@@ -42,7 +42,8 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         $userData = $request->validated();
-
+        //can't enable db transaction due to external call validation
+        //DB::beginTransaction();
         if($userData) {
             $userData['email_verified_at'] = now();
             $user = $this->userService->create($userData);
@@ -51,7 +52,7 @@ class AuthController extends Controller
             $tokenData = $this->oauthRepository->getAccessToken($userData, 'password');
 
             if ($tokenData) {
-
+               // DB::commit();
                 $user['token'] = $tokenData;
                 return response()->json([
                     'success' => true,
@@ -65,6 +66,7 @@ class AuthController extends Controller
             }
         }
 
+       // DB::rollback();
 
         return response()->json(['error' => 'Unauthorized'], 401);
     }

@@ -11,21 +11,23 @@ services:
         volumes:
             - ./:/var/www/html
         environment:
-            - APP_NAME=LUREG
-            - APP_ENV=local
-            - APP_DEBUG=true
-            - APP_KEY=base64:4i+UCrVlNwRzqZZ5hw6dswsgW/PLv+o4QG/HhvRWJFo=
+            - APP_NAME=${APP_NAME}
+            - APP_ENV=${APP_ENV}
+            - APP_DEBUG=${APP_DEBUG}
+            - APP_KEY=${APP_KEY}
             - DB_HOST=db
             - DB_PORT=3306
-            - DB_DATABASE=laravel
+            - DB_DATABASE=lureg
             - DB_USERNAME=root
             - DB_PASSWORD=root
+            - DB_CONNECTION=mysql
             - REDIS_HOST=redis
-            - REDIS_CLIENT=predis
+            - REDIS_CLIENT=${REDIS_CLIENT}
             - FILESYSTEM_DISK=local  # local, s3, public
-            - PASSPORT_PASSWORD_CLIENT_ID=  #testing purposes only
-            - PASSPORT_PASSWORD_CLIENT_SECRET= #testing purposes only
-        command: bash -c "composer install  && php artisan migrate  && php-fpm"
+            - PASSPORT_PASSWORD_CLIENT_ID=${PASSPORT_PASSWORD_CLIENT_ID}  #testing purposes only
+            - PASSPORT_PASSWORD_CLIENT_SECRET=${PASSPORT_PASSWORD_CLIENT_SECRET}   #testing purposes only
+            - APP_HOST_URL=${APP_HOST_URL}
+        command: bash -c "composer install   && php artisan migrate  && php-fpm"
         networks:
             - lara
 
@@ -37,11 +39,12 @@ services:
             - "3358:3306"
         environment:
             - MYSQL_ROOT_PASSWORD=root
-            - MYSQL_DATABASE=laravel
+            - MYSQL_DATABASE=lureg
             - MYSQL_USER=lara
             - MYSQL_PASSWORD=root
         volumes:
             - db_data:/var/lib/mysql
+            - ./docker/mysql/mysql_backup:/var/lib/mysql_backup
         networks:
             - lara
 

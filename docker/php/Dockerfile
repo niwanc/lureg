@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip
 
+## install nano && Install Composer
+RUN apt-get install -y curl nano
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -32,7 +34,9 @@ RUN composer install  --optimize-autoloader
 # copy necessary files and change permissions
 COPY . .
 
-RUN php artisan passport:keys
+COPY .env.example .env
+
+RUN php artisan passport:keys --force
 
 # Set proper permissions for Laravel storage and cache directories
 RUN chown -R www-data:www-data /var/www/html \
