@@ -23,7 +23,7 @@ class OAuthRepositoryTest extends TestCase
     {
         // Arrange: Fake HTTP response for a successful token request
         Http::fake([
-            config('app.url') . '/oauth/token' => Http::response([
+            config('app.app_host') . '/oauth/token' => Http::response([
                 'access_token' => 'test_access_token',
                 'refresh_token' => 'test_refresh_token',
                 'expires_in' => 3600,
@@ -46,7 +46,7 @@ class OAuthRepositoryTest extends TestCase
     {
         // Arrange: Fake HTTP response for a failed token request
         Http::fake([
-            config('app.url') . '/oauth/token' => Http::response([], 401),
+            config('app.app_host') . '/oauth/token' => Http::response([], 401),
         ]);
 
         $userData = ['email' => 'test@example.com', 'password' => 'wrong_password'];
@@ -62,7 +62,7 @@ class OAuthRepositoryTest extends TestCase
     {
         // Arrange: Fake HTTP response for a successful refresh token request
         Http::fake([
-            config('app.url') . '/oauth/token' => Http::response([
+            config('app.app_host') . '/oauth/token' => Http::response([
                 'access_token' => 'new_access_token',
                 'refresh_token' => 'new_refresh_token',
                 'expires_in' => 3600,
@@ -85,7 +85,7 @@ class OAuthRepositoryTest extends TestCase
     {
         // Arrange: Fake HTTP response for a failed refresh token request
         Http::fake([
-            config('app.url') . '/oauth/token' => Http::response([], 401),
+            config('app.app_host') . '/oauth/token' => Http::response([], 401),
         ]);
 
         $refreshToken = ['refresh_token' => 'invalid_refresh_token'];

@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'app_host' => env('APP_HOST_URL', 'http://host.docker.internal:8097'),
+
 ];

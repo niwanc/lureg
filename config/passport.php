@@ -74,7 +74,7 @@ return [
 
     'password_grant_access_client' => [
         'id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-        'secret' => env('PASSPORT_PASSWORD_SECRET'),
+        'secret' => env('PASSPORT_PASSWORD_CLIENT_SECRET'),
     ],
 
 ];

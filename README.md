@@ -39,16 +39,52 @@ Before setting up the project, ensure that you have the following tools installe
    ```bash
    git clone https://github.com/niwanc/lure.git
    cd lure
+## Local Configuration
+if you ar using local deployment use this
+APP_HOST_URL=http://localhost:8097
+ ```bash
+ 
+    composer install
+    cp .env.example .env
+    php artisan key:generate
+    php artisan migrate
+    php artisan passport:keys --force
+    php artisan passport:client --password
+    php artisan serve
+ ```
 
 ## Docker Configuration
 This section provides instructions for running the Laravel API project using Docker and Docker Compose. It assumes that the necessary Docker setup files are already in place.
 ### Steps to Run the Application with Docker
+Ensure the .env file is correctly copied and the environment variables are passed to the Docker container. In the docker-compose.yml, use:
+if you ar using local deployment use this
+APP_HOST_URL=http://host.docker.internal:80
 
+if you are using docker 
 1. **Starting Docker Containers**
     - Run the following command to start all necessary containers:
       ```bash
       docker-compose up -d
       ```
+
+```bash
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan passport:keys --force
+docker-compose exec app php artisan passport:client --password
+```
+copy your clinet id and secret  past it in .env file
+then  run following command
+```bash
+docker-compose down 
+docker-compose up
+
+```
+
+```bash
+environment:
+  - PASSPORT_PASSWORD_CLIENT_ID=${PASSPORT_PASSWORD_CLIENT_ID}
+  - PASSPORT_PASSWORD_SECRET=${PASSPORT_PASSWORD_SECRET}
+```
 
 2. **Accessing the Project**
     - Once the containers are up, access the main project at:
@@ -100,16 +136,7 @@ After setting up the Docker containers, you can run the Laravel test suite using
 ```bash
 docker-compose exec app php artisan test
 ```
-##Docker Configuration: 
 
-Ensure the .env file is correctly copied and the environment variables are passed to the Docker container. In the docker-compose.yml, use:
-```bash
-docker-compose exec app php artisan passport:keys --force
-docker-compose exec app php artisan passport:client --password
-environment:
-  - PASSPORT_PASSWORD_CLIENT_ID=${PASSPORT_PASSWORD_CLIENT_ID}
-  - PASSPORT_PASSWORD_SECRET=${PASSPORT_PASSWORD_SECRET}
-```
 
 ## CI/CD Pipeline for Laravel Vapor Deployment
 
