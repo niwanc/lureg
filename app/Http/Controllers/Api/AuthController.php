@@ -12,6 +12,7 @@ use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class AuthController extends Controller
@@ -41,29 +42,55 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $userData = $request->validated();
-        //can't enable db transaction due to external call validation
-        //DB::beginTransaction();
-        if($userData) {
-            $userData['email_verified_at'] = now();
-            $user = $this->userService->create($userData);
+        try {
+            DB::beginTransaction();
 
-            // Call the repository method to get the access token
-            $tokenData = $this->oauthRepository->getAccessToken($userData, 'password');
+            $userData = $request->validated();
+            //can't enable db transaction due to external call validation
+            //DB::beginTransaction();
+            if($userData) {
+                $userData['email_verified_at'] = now();
+                $user = $this->userService->create($userData);
 
-            if ($tokenData) {
-               // DB::commit();
-                $user['token'] = $tokenData;
-                return response()->json([
-                    'success' => true,
-                    'statusCode' => 201,
-                    'message' => 'User has been registered successfully.',
-                    'data' => [
-                        'user' => UserResource::make($user),
-                        'token' => $tokenData,
-                    ]
-                ], 201);
+                // Commit the transaction immediately after user creation
+                DB::commit();
+                // Call the repository method to get the access token
+                $tokenData = $this->oauthRepository->getAccessToken($userData, 'password');
+
+                if (!$tokenData) {
+                    // If token generation fails, delete the user and throw exception
+                    $user->delete();
+                    throw new \Exception('Failed to generate access token');
+                }
+
+                if ($tokenData) {
+                // DB::commit();
+                    $user['token'] = $tokenData;
+                    return response()->json([
+                        'success' => true,
+                        'statusCode' => 201,
+                        'message' => 'User has been registered successfully.',
+                        'data' => [
+                            'user' => UserResource::make($user),
+                            'token' => $tokenData,
+                        ]
+                    ], 201);
+                }
             }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Registration failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'statusCode' => 401,
+                'message' => 'Registration failed: ' . $e->getMessage(),
+            ], 401);
         }
 
        // DB::rollback();
@@ -171,24 +198,40 @@ class AuthController extends Controller
      */
     public function refreshToken(RefreshTokenRequest $request): JsonResponse
     {
-        $tokenData = $this->oauthRepository->getRefreshToken([
-            'refresh_token' => $request->refresh_token,
-        ], 'refresh_token');
+        try {
+            DB::beginTransaction();
+            
+            $tokenData = $this->oauthRepository->getRefreshToken([
+                'refresh_token' => $request->refresh_token,
+            ], 'refresh_token');
 
-        if ($tokenData) {
+            if (!$tokenData) {
+                throw new \Exception('Failed to refresh token');
+            }
+
+            DB::commit();
+            
             return response()->json([
                 'success' => true,
                 'statusCode' => 200,
-                'message' => 'Refreshed token.',
+                'message' => 'Token refreshed successfully.',
                 'data' => $tokenData,
             ], 200);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Token refresh failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json([
+                'success' => false,
+                'statusCode' => 401,
+                'message' => 'Token refresh failed: ' . $e->getMessage(),
+            ], 401);
         }
-        return response()->json([
-            'success' => false,
-            'statusCode' => 401,
-            'message' => 'Unauthorized.',
-            'errors' => 'Unauthorized',
-        ], 401);
     }
 
     /**
