@@ -51,7 +51,7 @@ class RefreshTokenTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'statusCode' => 200,
-                'message' => 'Refreshed token.',
+                'message' => 'Token refreshed successfully.',
                 'data' => $tokenData,
             ]);
     }
